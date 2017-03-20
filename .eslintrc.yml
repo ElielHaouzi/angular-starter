@@ -1,0 +1,16 @@
+# https://medium.freecodecamp.com/adding-some-air-to-the-airbnb-style-guide-3df40e31c57a
+env:
+  browser: true
+  es6: true
+  node: true
+  mocha: true
+extends: airbnb
+rules:
+  # make it meaningful
+  prefer-const: 1
+
+  # keep it simple
+  complexity:
+    - 1
+    - 5
+  no-restricted-syntax: 1
