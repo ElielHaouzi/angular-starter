@@ -8,6 +8,9 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 module.exports = {
   entry: {
     app: ['./app/app.js'],
+    vendor: ['angular', 'angular-ui-router'],
+    sitevendor: ['angular', 'angular-ui-router', 'angular-ui-bootstrap'],
+    // home: ['restangular', 'angular-ui-router'],
     // polyfills: ['babel-polyfill'],
   },
   module: {
@@ -15,11 +18,11 @@ module.exports = {
       { test: /\.js$/, loader: 'ng-annotate-loader!babel-loader', exclude: /node_modules/ },
       { test: /\.html$/, loader: 'html-loader' }, // options: { minimize: true }
       { test: /\.(pug|jade)$/, loader: 'pug-loader' },
-      { test: /\.css$/, loader: 'style-loader!css-loader', options: { modules: true } },
-      { test: /\.(scss|sass)$/, loaders: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader'], options: { modules: true } },
-      { test: /\.(png|jpeg|jpg)$/, loader: 'url-loader?limit=20000&name=images/[hash].[ext]' },
-      { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'url-loader?limit=10000&minetype=application/font-woff&name=fonts/[hash].[ext]' },
-      { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file-loader?name=fonts/[hash].[ext]' },
+      { test: /\.css$/, loader: 'style-loader!css-loader' },
+      { test: /\.(scss|sass)$/, loaders: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader'] },
+      // { test: /\.(png|jpeg|jpg)$/, loader: 'url-loader?limit=20000&name=images/[hash].[ext]' },
+      // { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'url-loader?limit=10000&minetype=application/font-woff&name=fonts/[hash].[ext]' },
+      // { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file-loader?name=fonts/[hash].[ext]' },
     ],
   },
   // resolve: {
@@ -36,7 +39,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './index.html',
       inject: 'body',
-      chunks: ['vendor', 'app'],
+      chunks: ['app', 'sitevendor', 'manifest'],
       // minify: {},
     }),
 
@@ -45,16 +48,34 @@ module.exports = {
     // consider to specify common chunks manually.
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
-      minChunks: module => /node_modules/.test(module.resource),
+      chunks: ['app', 'vendor', 'sitevendor'],
+      // minChunks: module => {
+      //     return /node_modules/.test(module.resource);
+      // },
+      // minChunks: Infinity,
+      // children: true
     }),
-    new webpack.LoaderOptionsPlugin({
-      test: /\.scss$/i,
-      options: {
-        postcss: {
-          plugins: [autoprefixer],
-        },
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'sitevendor',
+      chunks: ['app'],
+      minChunks: module => {
+          return /node_modules/.test(module.resource);
       },
+      // minChunks: Infinity,
+      // children: true
     }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: "manifest",
+      minChunks: Infinity
+    }),
+    // new webpack.LoaderOptionsPlugin({
+    //   test: /\.scss$/i,
+    //   options: {
+    //     postcss: {
+    //       plugins: [autoprefixer],
+    //     },
+    //   },
+    // }),
     new BundleAnalyzerPlugin({
       // openAnalyzer: false,
       // generateStatsFile: false,

@@ -30,9 +30,9 @@ config.plugins = config.plugins.concat([
     },
   }),
 
-  new CompressionPlugin({
-    // asset: '[path]'
-  }),
+  // new CompressionPlugin({
+  //   // asset: '[path]'
+  // }),
 ]);
 
 module.exports = config;
